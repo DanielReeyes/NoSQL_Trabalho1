@@ -1,0 +1,26 @@
+{
+  "name": "trabalho_1",
+  "version": "1.0.0",
+  "description": "Trabalho 1 - Redis - Livraria Online",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DanielReeyes/NoSQL_Trabalho1.git"
+  },
+  "author": "Daniel De Los Reyes",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DanielReeyes/NoSQL_Trabalho1/issues"
+  },
+  "homepage": "https://github.com/DanielReeyes/NoSQL_Trabalho1#readme",
+  "dependencies": {
+  	"express":"*",
+  	"body-parser": "*",
+    "ejs": "^2.4.2",
+    "morgan":"*",
+    "redis":"*"
+  }
+}
