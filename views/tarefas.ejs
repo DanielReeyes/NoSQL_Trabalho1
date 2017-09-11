@@ -1,0 +1,13 @@
+<form method="post" action="/tarefa/adicionar">
+	<label>Adicionar Tarefa</label>
+	<input type="text" name="tarefa" placeholder="Adicionar Tarefa">
+	<input type="submit" value="Adicionar">
+</form>
+
+<%= titulo %>
+
+<ul>
+<% tarefas.forEach(function(tarefa){ %>
+	<li><%= tarefa %></li>
+<% }) %>
+</ul>
