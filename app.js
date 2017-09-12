@@ -37,7 +37,6 @@ app.get('/', function (req, res) {
     });
 });
 
-
 app.post('/tarefa/adicionar', function(req, res){
 	var tarefa = req.body.tarefa;
 
