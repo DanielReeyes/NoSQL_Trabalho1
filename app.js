@@ -10,7 +10,7 @@ var app = express();
 var clienteRedis = redis.createClient();
 
 clienteRedis.on('connect', function () {
-    console.log('Servidor Redis Conectado ...');
+    console.log('Conexão ao Servidor Redis OK!');
 });
 
 // Configuração do Renderizador de Páginas (EJS)
@@ -45,7 +45,7 @@ app.post('/tarefa/adicionar', function(req, res){
 		if(err){
 			console.log(err);
 		}
-		console.log('Tarefa Adicionada ...');
+		console.log('Livro Adicionado ...');
 		res.redirect('/');
 	});
 });
