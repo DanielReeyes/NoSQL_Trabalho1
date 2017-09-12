@@ -24,7 +24,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Captura o caminho '/' na URL
 app.get('/', function (req, res) {
-    var titulo = 'Lista de Tarefas';
+    var titulo = 'Lista de Livros';
 
     clienteRedis.lrange('tarefas', 0, -1, function (err, tarefas) {
 		clienteRedis.hgetall('contato', function(err, contato){

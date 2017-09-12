@@ -61,24 +61,36 @@
                 </form>
     
                 <div class="well">
-                    <h3>Contato</h3>
-                    Nome:
-                    <%= contato.nome %><br> Companhia:
-                        <%= contato.companhia %><br> Telefone:
-                            <%= contato.telefone %><br>
+                    <h3>Informações Complementares Do Livro</h3>
+                    
+                    Título do Livro:
+                    <%= contato.nome %>
+                    <br> 
+                    Autor:
+                    <%= contato.companhia %>
+                    <br>
+                    Editora:
+                    <%= contato.telefone %>
+                    <br>
+                    Nº de Páginas:
+
+
                 </div>
     
                 <div class="well">
                     <h3>Editar Contato</h3>
                     <form method="post" action="/contato/editar">
                         <label>Nome</label><br>
-                        <input type="text" name="nome" placeholder="Nome">
+                        <input type="text" name="nome" placeholder="Título">
                         <br><br>
                         <label>Companhia</label><br>
                         <input type="text" name="companhia" placeholder="Autor">
                         <br><br>
                         <label>Telefone</label><br>
-                        <input type="text" name="telefone" placeholder="Telefone">
+                        <input type="text" name="telefone" placeholder="Editora">
+                        <br><br>
+                        <label>Número de Páginas</label><br>
+                        <input type="text" name="telefone2" placeholder="Páginas">
                         <br><br>
                         <input type="submit" value="Editar">
                     </form>
