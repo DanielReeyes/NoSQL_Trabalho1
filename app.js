@@ -9,6 +9,13 @@ var app = express();
 // Cria Cliente Redis
 // Para poder manusear as informações do BD NoSQL
 var clienteRedis = redis.createClient();
+// var clienteRedis = redis.createClient(13873, 
+// 	'pub-redis-15617.us-west-1.1.azure.garantiadata.com:15617', 
+// 	{no_ready_check: true});
+
+// clienteRedis.auth('password', function(err){
+// 	if (err) throw err;
+// });
 
 clienteRedis.on('connect', function () {
 	console.log('Conexão ao Servidor Redis OK!');
@@ -22,24 +29,6 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
-
-// Captura o caminho '/' na URL
-///app.get('/', function (req, res) {
-///    var titulo = 'Lista de Livros';
-
-//lrange: Retorna os elementos especificados na lista 'Tarefas'
-///    clienteRedis.lrange('tarefas', 0, -1, function (err, tarefas) {
-//hgetall: Obtém todos os campos e valores em um hash
-//hgetall: Retorna cada nome de campo seguido de seu valor
-///		clienteRedis.hgetall('contato', function(err, contato){
-///			res.render('tarefas', {
-///				titulo: titulo,
-///				tarefas: tarefas,
-///				contato: contato
-///			});
-///		});
-///    });
-///});
 
 // Captura o caminho '/' na URL
 app.get('/', function (req, res) {
@@ -61,7 +50,7 @@ app.get('/', function (req, res) {
 });
 
 
-app.post('/tarefa/adicionar', function (req, res) {
+app.post('/livro/adicionar', function (req, res) {
 	var livro = req.body.tituloLivro;
 	var codigoLivro = req.body.codigoLivro;
 
@@ -70,24 +59,28 @@ app.post('/tarefa/adicionar', function (req, res) {
 		if (err) {
 			console.log(err);
 		}
-		console.log('Livro ' + livro + ' Adicionado ...');
-	//	res.redirect('/');
+	});
+
+	//rpush: insere novo elemento no fim 
+	clienteRedis.rpush('lstCodigosLivros', codigoLivro, function (err, reply) {
+		if (err) {
+			console.log(err);
+		}
 	});
 
 	//Agora vai instanciar o objeto do livro para poder editar quando quiser
 	clienteRedis.hmset('livro'+codigoLivro,
-	 	['titulo', livro,
+	 	['codigo', codigoLivro,
+		 'titulo', livro,
 	 	 'autor', '',
 	 	 'editora', '',
 	 	 'paginas', ''],
-	 	function (err, reply) {
-	 		if (err) {
+	 	 function (err, reply) {
+	 	 	if (err) {
 	 			console.log(err);
 	 		}
-			 //console.log(reply);
-			 console.log('Objeto criado')
 	 		res.redirect('/');
-	 	});
+	});
 });
 
 app.post('/tarefa/remover', function (req, res) {
@@ -106,6 +99,23 @@ app.post('/tarefa/remover', function (req, res) {
 						console.log(err);
 					}
 				});
+
+				clienteRedis.lrange('lstCodigosLivros', posicao -1, posicao -1, function (err, lstCodigosLivros){
+					for (var PosicaoLstCodigosLivros = 0; PosicaoLstCodigosLivros < lstCodigosLivros.length; PosicaoLstCodigosLivros++){
+						console.log("Codigo: " + lstCodigosLivros[PosicaoLstCodigosLivros])
+						clienteRedis.del("livro"+lstCodigosLivros[PosicaoLstCodigosLivros], function(){
+							if(err){
+								console.log(err);
+							}
+						})
+					}					
+				});
+
+				clienteRedis.lrem('lstCodigosLivros', 0, lstCodigosLivros[posicao], function () {
+					if (err) {
+						console.log(err);
+					}
+				});
 			}
 		}
 		res.redirect('/');
@@ -116,50 +126,47 @@ app.post('/livro/editar', function (req, res) {
 	var livroEditado = {};
 
 	//Monta um objeto com as informacoes que há na tela
-	livroEditado.Codigo = req.body.Codigo;
-	livroEditado.Titulo = req.body.Titulo;
-	livroEditado.Autor = req.body.Autor;
-	livroEditado.Editora = req.body.Editora;
-	livroEditado.Paginas = req.body.Paginas;
+	livroEditado.codigo = req.body.Codigo;
+	livroEditado.titulo = req.body.Titulo;
+	livroEditado.autor = req.body.Autor;
+	livroEditado.editora = req.body.Editora;
+	livroEditado.paginas = req.body.Paginas;
 
 	//Define vários campos para seus respectivos valores
 	//Substitui todos os campos existentes no hash	
 	clienteRedis.hmset('livro'+req.body.Codigo,
 			[
-			'Titulo', livroEditado.nome,
-			'Autor', livroEditado.companhia,
-			'Editora', livroEditado.telefone,
-			'Paginas', livroEditado.telefone],
-		function (err, reply) {
-			if (err) {
-				console.log(err);
-			}
-			console.log(reply);
-			res.redirect('/');
-		});
+			'codigo', livroEditado.codigo,
+			'titulo', livroEditado.titulo,
+			'autor', livroEditado.autor,
+			'editora', livroEditado.editora,
+			'paginas', livroEditado.paginas],
+			function (err, reply) {
+				if (err) {
+					console.log(err);
+				}
+				res.redirect('/');
+			});
 });
 
 app.post('/livro/buscar', function (req, res) {
-	var titulo = 'Teste';
+	var titulo = 'Lista de Livros';
 	var codigoLivroBuscado = req.body.CodigoBuscado;
-	console.log('Livro buscado livro'+codigoLivroBuscado)
 
 	clienteRedis.lrange('tarefas', 0, -1, function (err, tarefas) {
 	clienteRedis.hgetall('livro'+codigoLivroBuscado, function (err, livroBuscado) {
 		res.render('tarefas', {
-		//	livro: livro,
-		//	titulo: titulo//,
-		tarefas: tarefas,
-		//});
-		titulo: titulo,
-		livro : livroBuscado
+			  tarefas: tarefas,
+			  titulo: titulo,
+			  livro : livroBuscado
 			});
 		});
 	});	
 });
 
-app.listen(3000);
-console.log('Servidor Inicializado na Porta 3000 ...',
-	'URL: http://localhost:3000/');
+app.set('port', (process.env.PORT || 5000));
+app.listen(app.get('port'), function() {
+	console.log('Servidor Inicializado na Porta', app.get('port'));
+});	
 
 module.exports = app;
